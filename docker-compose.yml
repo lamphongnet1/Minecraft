@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 2004
+      POSTGRES_DB: vnstock_data
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  database_service:
+    build: ./backend/database
+    container_name: database_service
+    ports:
+      - "7001:7001"
+    depends_on:
+      - db
+
+  prediction_service:
+    build: ./backend/prediction
+    container_name: prediction_service
+    ports:
+      - "7002:7002"
+    depends_on:
+      - db
+
+  clustering_service:
+    build: ./backend/clustering
+    container_name: clustering_service
+    ports:
+      - "7003:7003"
+    depends_on:
+      - db
+
+  ingestion_service:
+    build: ./ingestion
+    container_name: ingestion_service
+    depends_on:
+      - db
+    # không cần ports nếu ingestion.py không expose HTTP
+
+  frontend_service:
+    build: ./frontend
+    container_name: frontend_service
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database_service
+      - prediction_service
+      - clustering_service
+    environment:
+      # đặt host backend cho frontend
+      DATABASE_HOST: database_service
+      PREDICTION_HOST: prediction_service
+      CLUSTERING_HOST: clustering_service
+
+volumes:
+  pgdata:
