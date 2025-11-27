@@ -1,19 +1,27 @@
 FROM python:3.11
 
-WORKDIR /app
+WORKDIR /frontend
 
+# Chỉ copy requirements trước để tận dụng cache
+COPY requirements.txt .
+
+# Cài gói hệ thống
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    libffi-dev \
+    libssl-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Cài Python packages
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy toàn bộ project vào sau
 COPY . .
 
-# Cài đặt các thư viện cần thiết cho việc biên dịch (ví dụ: scikit-learn cần gcc)
-# và thư viện cho kết nối PostgreSQL (libpq-dev)
-RUN apt-get update && \
-    apt-get install -y gcc libpq-dev && \
-    rm -rf /var/lib/apt/lists/*
+EXPOSE 8000
 
-# Cài đặt các dependencies Python.
-# FastAPI và Uvicorn cho API, pandas và sqlalchemy cho xử lý dữ liệu/DB, scikit-learn cho clustering.
-RUN pip install --no-cache-dir fastapi uvicorn pandas sqlalchemy scikit-learn
+CMD ["python", "app.py"]
 
-# Khởi chạy FastAPI app
-# main:app là tham chiếu đến instance FastAPI trong file main.py
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7003"]

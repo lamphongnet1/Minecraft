@@ -4,7 +4,3 @@ pandas
 sqlalchemy
 psycopg2-binary
 scikit-learn
-requests
-vnstock3
-dash
-plotly

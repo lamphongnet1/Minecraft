@@ -82,7 +82,7 @@ def prediction():
 
     current = df.iloc[[-1]][features]
     current_price = float(current["close"])
-    pred_price = float(model.predict(current)[0])
+    pred_price = round(float(model.predict(current)[0]), 2)
 
     trend = (
         "Tăng" if pred_price > current_price

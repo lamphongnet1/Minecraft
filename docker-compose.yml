@@ -7,6 +7,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 2004
       POSTGRES_DB: vnstock_data
+      TZ: Asia/Ho_Chi_Minh
     ports:
       - "5432:5432"
     volumes:
@@ -54,9 +55,9 @@ services:
       - clustering_service
     environment:
       # đặt host backend cho frontend
-      DATABASE_HOST: database_service
-      PREDICTION_HOST: prediction_service
-      CLUSTERING_HOST: clustering_service
+      DATABASE_HOST: http://database_service:7001
+      PREDICTION_HOST: http://prediction_service:7002
+      CLUSTERING_HOST: http://clustering_service:7003
 
 volumes:
   pgdata:
